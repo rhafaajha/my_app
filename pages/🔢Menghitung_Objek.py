@@ -36,19 +36,21 @@ def main():
             "Upload Image", type=["jpg", "jpeg", "png"])
         if uploaded_image:
             st.sidebar.header("Image Processing")
-            kernel = st.sidebar.number_input(
-                "Masukkan Threshold kernel", min_value=0, max_value=255, value=178)
+            thresh = st.sidebar.number_input(
+                "Masukkan Threshold", min_value=0, max_value=255, value=178)
+            kernel_size = st.sidebar.number_input(
+                "Masukkan Kernel Size", min_value=0, max_value=255, value=20)
 
             original_image = cv2.imdecode(
                 np.frombuffer(uploaded_image.read(), np.uint8), 1)
-            proses = process_image(original_image, kernel)
+            proses = process_image(original_image, thresh, kernel_size)
 
             col1, col2 = st.columns(2)
             with col1:
                 save_image(proses)
 
             with col2:
-                jumlah_objek(original_image, kernel)
+                jumlah_objek(original_image, thresh, kernel_size)
 
             col1, col2 = st.columns(2)
             with col1:
@@ -64,7 +66,7 @@ def main():
         st.sidebar.error(f"Terjadi kesalahan: {str(e)}")
 
 
-def process_image(img, kernel):
+def process_image(img, thresh, kernel_size):
     st.sidebar.header("Setting Line")
     box_color_hex = st.sidebar.color_picker(label="Box Color", value='#0000ff')
 
@@ -81,26 +83,34 @@ def process_image(img, kernel):
 
     img_copy = img.copy()
     grayscale_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    binary_image = cv2.threshold(
-        grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
+    binary_image = cv2.threshold(grayscale_image, thresh, 255, cv2.THRESH_BINARY)[1]
     image = ~binary_image
 
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+
+    # Apply erosi to the binary image
+    eroded_image = cv2.erode(image, kernel, iterations=1)
+
     (cnt, _) = cv2.findContours(
-        image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+        eroded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
     )
     # processed_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     img_copy = cv2.drawContours(img_copy, cnt, -1, box_color_bgr, width)
     return img_copy
 
 
-def jumlah_objek(img, kernel):
+def jumlah_objek(img, thresh, kernel_size):
     grayscale_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    binary_image = cv2.threshold(
-        grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
+    binary_image = cv2.threshold(grayscale_image, thresh, 255, cv2.THRESH_BINARY)[1]
     image = ~binary_image
 
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+
+    # Apply erosi to the binary image
+    eroded_image = cv2.erode(image, kernel, iterations=1)
+
     (cnt, _) = cv2.findContours(
-        image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+        eroded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
     )
     object_count = len(cnt)
     st.info(f"Jumlah Objek pada Citra: {object_count}")
