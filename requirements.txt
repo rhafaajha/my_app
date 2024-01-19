@@ -1,9 +1,5 @@
 pip==23.3.2
 streamlit<=1.30.0
-streamlit_option_menu
 opencv-python<=4.9.0.80
-opencv-contrib-python-headless
 numpy<=1.26.3
 streamlit_cropper<=0.2.2
-io
-PIL
