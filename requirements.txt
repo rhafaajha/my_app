@@ -1,0 +1,6 @@
+streamlit
+opencv-python
+io
+numpy
+PIL
+streamlit_cropper
