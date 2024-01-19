@@ -76,10 +76,10 @@ from streamlit_cropper import st_cropper
 Jika Anda ingin berkontribusi pada proyek ini, harap ikuti langkah-langkah berikut:
 
 1. Fork repository ini.
-2. Buat branch baru: ```bash git checkout -b fitur-baru```.
+2. Buat branch baru: ```git checkout -b fitur-baru```.
 3. Lakukan perubahan yang diperlukan.
-4. Commit perubahan Anda: ```bash git commit -m 'Menambahkan fitur baru'```.
-5. Push ke branch: ```bash git push origin fitur-baru```.
+4. Commit perubahan Anda: ```git commit -m 'Menambahkan fitur baru'```.
+5. Push ke branch: ```git push origin fitur-baru```.
 6. Buat pull request.
 
 Terima kasih telah berkontribusi!
