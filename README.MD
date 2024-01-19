@@ -1,12 +1,12 @@
 ## Getting Started
 
-First, run the development server:
+Pertama, jalankan server pengembangan:
 
 ```bash
 streamlit run main_page.py
 ```
 
-Open [http://localhost:8501](http://localhost:8501) with your browser to see the result.
+Buka [http://localhost:8501](http://localhost:8501) dengan browser Anda untuk melihat hasilnya.
 
 ## Instalasi
 
