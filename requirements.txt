@@ -1,6 +1,6 @@
 python<=3.11.0
 pip==23.3.2
 streamlit<=1.30.0
-opencv-python<=4.9.0.80
+opencv-python>=3.4.0.14
 numpy<=1.26.3
 streamlit_cropper<=0.2.2
