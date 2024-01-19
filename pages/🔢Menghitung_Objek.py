@@ -25,9 +25,10 @@ st.set_page_config(
     }
 )
 
+
 def main():
     # Make original_image a global variable
-    global original_image 
+    global original_image
 
     st.title("Menghitung Jumlah Objek pada Citra")
     try:
@@ -35,9 +36,11 @@ def main():
             "Upload Image", type=["jpg", "jpeg", "png"])
         if uploaded_image:
             st.sidebar.header("Image Processing")
-            kernel = st.sidebar.number_input("Masukkan Threshold kernel", min_value=0, max_value=255, value=178)
+            kernel = st.sidebar.number_input(
+                "Masukkan Threshold kernel", min_value=0, max_value=255, value=178)
 
-            original_image = cv2.imdecode(np.frombuffer(uploaded_image.read(), np.uint8), 1)
+            original_image = cv2.imdecode(
+                np.frombuffer(uploaded_image.read(), np.uint8), 1)
             proses = process_image(original_image, kernel)
 
             col1, col2 = st.columns(2)
@@ -46,18 +49,20 @@ def main():
 
             with col2:
                 jumlah_objek(original_image, kernel)
-            
 
             col1, col2 = st.columns(2)
             with col1:
-                st.image(original_image, channels="BGR", caption="Original Image", use_column_width=True)
+                st.image(original_image, channels="BGR",
+                         caption="Original Image", use_column_width=True)
 
             with col2:
-                st.image(proses, channels="BGR", caption="Processed Image", use_column_width=True)
+                st.image(proses, channels="BGR",
+                         caption="Processed Image", use_column_width=True)
         else:
             st.sidebar.info(f"""Harap masukkan gambar terlebih dahulu""")
     except Exception as e:
         st.sidebar.error(f"Terjadi kesalahan: {str(e)}")
+
 
 def process_image(img, kernel):
     st.sidebar.header("Setting Line")
@@ -69,13 +74,15 @@ def process_image(img, kernel):
 
     opsi = st.sidebar.selectbox("Pilih Shape", options=["Outline", "Fill"])
     if opsi == "Outline":
-        width = st.sidebar.number_input(label="Thickness", min_value=1, max_value=25, value=5)
+        width = st.sidebar.number_input(
+            label="Thickness", min_value=1, max_value=25, value=5)
     elif opsi == "Fill":
         width = cv2.FILLED
 
     img_copy = img.copy()
     grayscale_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    binary_image = cv2.threshold(grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
+    binary_image = cv2.threshold(
+        grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
     image = ~binary_image
 
     (cnt, _) = cv2.findContours(
@@ -85,9 +92,11 @@ def process_image(img, kernel):
     img_copy = cv2.drawContours(img_copy, cnt, -1, box_color_bgr, width)
     return img_copy
 
+
 def jumlah_objek(img, kernel):
     grayscale_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    binary_image = cv2.threshold(grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
+    binary_image = cv2.threshold(
+        grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
     image = ~binary_image
 
     (cnt, _) = cv2.findContours(
@@ -97,6 +106,7 @@ def jumlah_objek(img, kernel):
     st.info(f"Jumlah Objek pada Citra: {object_count}")
     return object_count
 
+
 def save_image(image):
     # Menggunakan BytesIO untuk menyimpan gambar tanpa menyimpan ke file
     image_bytes = BytesIO()
@@ -104,10 +114,11 @@ def save_image(image):
     if st.download_button(
         label="Download Processed Image",
         data=image_bytes.getvalue(),
-        file_name="download_processed.jpg",
+        file_name="download_count.jpg",
         mime="image/jpeg"
     ):
         st.toast(f"Gambar telah berhasil diunduh")
+
 
 if __name__ == "__main__":
     main()
