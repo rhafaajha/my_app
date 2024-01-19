@@ -1,4 +1,4 @@
-pip==23.3.2
+pip>=23.3.2
 streamlit<=1.30.0
 opencv-python>=3.4.0.14
 numpy<=1.26.3
