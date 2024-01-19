@@ -69,6 +69,7 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 from streamlit_cropper import st_cropper
+```
 
 ## Kontribusi
 
