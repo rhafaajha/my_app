@@ -54,7 +54,7 @@ Untuk menggunakan proyek ini, ikuti langkah-langkah instalasi berikut:
 6. Install dependensi menggunakan pip:
 
     ```bash
-    pip install streamlit opencv-python Pillow streamlit-cropper
+    pip install streamlit opencv-python Pillow streamlit-cropper scipy
     ```
 
 ## Penggunaan
