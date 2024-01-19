@@ -1,6 +1,13 @@
-## Getting Started
+## Menjalankan Aplikasi
 
-Pertama, jalankan server pengembangan:
+1. Pertama, buka terminal atau command prompt.
+2. Kedua, masuk ke direktori yang menampung file aplikasi:
+
+```bash
+cd my_app
+```
+
+3. Kedua, jalankan server pengembangan:
 
 ```bash
 streamlit run main_page.py
@@ -16,13 +23,19 @@ Untuk menggunakan proyek ini, ikuti langkah-langkah instalasi berikut:
 
 2. Buka terminal atau command prompt.
 
-3. Buat virtual environment (opsional, tapi disarankan):
+3. Clone repository ini ke komputer lokal Anda:
+
+   ```bash
+   git clone https://github.com/rhafaajha/my_app.git
+   ```
+
+4. Buat virtual environment (opsional, tapi disarankan):
 
     ```bash
     python -m venv env
     ```
 
-4. Aktifkan virtual environment (opsional):
+5. Aktifkan virtual environment (opsional):
 
     - Windows:
 
@@ -36,7 +49,7 @@ Untuk menggunakan proyek ini, ikuti langkah-langkah instalasi berikut:
       source env/bin/activate
       ```
 
-5. Install dependensi menggunakan pip:
+6. Install dependensi menggunakan pip:
 
     ```bash
     pip install streamlit opencv-python Pillow streamlit-cropper
@@ -54,3 +67,16 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 from streamlit_cropper import st_cropper
+
+## Kontribusi
+
+Jika Anda ingin berkontribusi pada proyek ini, harap ikuti langkah-langkah berikut:
+
+1. Fork repository ini.
+2. Buat branch baru: ```bash git checkout -b fitur-baru```.
+3. Lakukan perubahan yang diperlukan.
+4. Commit perubahan Anda: ```bash git commit -m 'Menambahkan fitur baru'```.
+5. Push ke branch: ```bash git push origin fitur-baru```.
+6. Buat pull request.
+
+Terima kasih telah berkontribusi!

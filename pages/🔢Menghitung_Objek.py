@@ -1,14 +1,16 @@
 import streamlit as st
 import cv2
-import io
 import numpy as np
+import io
 from PIL import Image
 from io import BytesIO
-from streamlit_cropper import st_cropper
 
-# Set Streamlit page configuration
+# Global variable
+original_image = None
+
+# Mengatur judul halaman browser
 st.set_page_config(
-    page_title="UAS Pengolahan Citra | Cropped Citra",
+    page_title="UAS Pengolahan Citra | Menghitung Jumlah Objek pada Citra",
     page_icon="🎭",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -23,81 +25,89 @@ st.set_page_config(
     }
 )
 
-
-def save_image(image):
-    edited_image = Image.fromarray(image)
-
-    # Menggunakan BytesIO untuk menyimpan gambar tanpa menyimpan ke file
-    image_bytes = io.BytesIO()
-    edited_image.save(image_bytes, format="JPEG")
-    st.sidebar.header("Download Button")
-    if st.sidebar.download_button(
-        label="Download Processed Image",
-        data=image_bytes.getvalue(),
-        file_name="download.jpg",
-        mime="image/jpeg"
-    ):
-        st.toast("Gambar telah berhasil diunduh")
-
-
 def main():
-    # Global variable
-    original_image = None
+    # Make original_image a global variable
+    global original_image 
 
-    st.title("Cropped Citra")
-
+    st.title("Menghitung Jumlah Objek pada Citra")
     try:
-        img_file = st.file_uploader(
-            "Upload an image", type=["jpg", "jpeg", "png"])
-
-        if img_file is not None:
+        uploaded_image = st.file_uploader(
+            "Upload Image", type=["jpg", "jpeg", "png"])
+        if uploaded_image:
             st.sidebar.header("Image Processing")
+            kernel = st.sidebar.number_input("Masukkan Threshold kernel", min_value=0, max_value=255, value=178)
 
-            box_color = st.sidebar.color_picker(
-                label="Box Color", value='#0000FF')
-
-            aspect_choice = st.sidebar.selectbox(label="Aspect Ratio", options=[
-                                                 "1:1", "16:9", "4:3", "2:3", "Free"])
-            aspect_dict = {
-                "1:1": (1, 1),
-                "16:9": (16, 9),
-                "4:3": (4, 3),
-                "2:3": (2, 3),
-                "Free": None
-            }
-            aspect_ratio = aspect_dict[aspect_choice]
-
-            img = Image.open(img_file)
-            return_type = 'box'
-            if return_type:
-                rect = st_cropper(
-                    img,
-                    realtime_update=True,
-                    box_color=box_color,
-                    aspect_ratio=aspect_ratio,
-                    return_type=return_type,
-                    stroke_width=3
-                )
-
-                raw_image = np.asarray(img).astype('uint8')
-                left, top, width, height = tuple(map(int, rect.values()))
+            original_image = cv2.imdecode(np.frombuffer(uploaded_image.read(), np.uint8), 1)
+            proses = process_image(original_image, kernel)
 
             col1, col2 = st.columns(2)
             with col1:
-                st.image(img, caption='Original Image', use_column_width=True)
+                save_image(proses)
 
             with col2:
-                original_image = raw_image[top:top + height, left:left + width]
-                st.image(Image.fromarray(original_image),
-                         caption='Processed Image', use_column_width=True)
+                jumlah_objek(original_image, kernel)
+            
 
-            save_image(original_image)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image(original_image, channels="BGR", caption="Original Image", use_column_width=True)
 
+            with col2:
+                st.image(proses, channels="BGR", caption="Processed Image", use_column_width=True)
         else:
-            st.sidebar.info("Harap masukkan gambar terlebih dahulu")
+            st.sidebar.info(f"""Harap masukkan gambar terlebih dahulu""")
     except Exception as e:
         st.sidebar.error(f"Terjadi kesalahan: {str(e)}")
 
+def process_image(img, kernel):
+    st.sidebar.header("Setting Line")
+    box_color_hex = st.sidebar.color_picker(label="Box Color", value='#0000ff')
+
+    # Convert hex color to scalar (r, g, b)
+    box_color_rgb = tuple(int(box_color_hex[i:i+2], 16) for i in (1, 3, 5))
+    box_color_bgr = tuple(reversed(box_color_rgb))  # Convert to BGR
+
+    opsi = st.sidebar.selectbox("Pilih Shape", options=["Outline", "Fill"])
+    if opsi == "Outline":
+        width = st.sidebar.number_input(label="Thickness", min_value=1, max_value=25, value=5)
+    elif opsi == "Fill":
+        width = cv2.FILLED
+
+    img_copy = img.copy()
+    grayscale_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    binary_image = cv2.threshold(grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
+    image = ~binary_image
+
+    (cnt, _) = cv2.findContours(
+        image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+    )
+    # processed_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    img_copy = cv2.drawContours(img_copy, cnt, -1, box_color_bgr, width)
+    return img_copy
+
+def jumlah_objek(img, kernel):
+    grayscale_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    binary_image = cv2.threshold(grayscale_image, kernel, 255, cv2.THRESH_BINARY)[1]
+    image = ~binary_image
+
+    (cnt, _) = cv2.findContours(
+        image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+    )
+    object_count = len(cnt)
+    st.info(f"Jumlah Objek pada Citra: {object_count}")
+    return object_count
+
+def save_image(image):
+    # Menggunakan BytesIO untuk menyimpan gambar tanpa menyimpan ke file
+    image_bytes = BytesIO()
+    Image.fromarray(image).save(image_bytes, format="JPEG")
+    if st.download_button(
+        label="Download Processed Image",
+        data=image_bytes.getvalue(),
+        file_name="download_processed.jpg",
+        mime="image/jpeg"
+    ):
+        st.toast(f"Gambar telah berhasil diunduh")
 
 if __name__ == "__main__":
     main()

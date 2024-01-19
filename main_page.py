@@ -25,7 +25,7 @@ st.set_page_config(
     }
 )
 
-st.markdown("# 🌟 Selamat Datang di Web Kami 🌟")
+st.markdown("# 🌟 Selamat Datang di Web Studio Citra 🌟")
 st.sidebar.success(f"Select a page above.")
 st.text(""" Temukan Kreativitas Tanpa Batas dalam Setiap Pixel!""")
 
