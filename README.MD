@@ -5,7 +5,7 @@
 
 ```bash
 cd my_app
-or
+# or
 cd my_app-main
 ```
 
