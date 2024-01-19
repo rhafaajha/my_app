@@ -5,6 +5,8 @@
 
 ```bash
 cd my_app
+or
+cd my_app-main
 ```
 
 3. Kedua, jalankan server pengembangan:
